@@ -4,8 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Ours Cafe - Staff & POS Engine v7.0</title>
-<!-- Tailwind CSS CDN -->
+<!-- Tailwind CSS CDN & Strict Class Config -->
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class'
+  }
+</script>
 <!-- Font Awesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <!-- Google Fonts -->
@@ -15,23 +20,26 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+/* DYNAMIC THEME ENGINE (HIGH-CONTRAST DENSE POS) */
 :root{
   --red:#C0392B;--red-deep:#922B21;--red-light:#FADBD8;
-  --white:#FFFFFF;--off:#FAFAFA;--bg:#F4F6F8;
-  --card:#FFFFFF;--border:#E2E8F0;
-  --text:#1E293B;--sub:#64748B;--muted:#94A3B8;
-  --header-bg:#FFFFFF;--kanban-bg:#FFFFFF;
+  --bg:#F1F5F9;--card:#FFFFFF;--card-subtle:#F8FAFC;
+  --border:#CBD5E1;--border-strong:#94A3B8;
+  --text:#0F172A;--sub:#334155;--muted:#64748B;
+  --header-bg:#FFFFFF;--kanban-bg:#F8FAFC;
 }
 body.dark{
-  --white:#1E293B;--off:#0F172A;--bg:#070D18;
-  --card:#111C33;--border:#1E2F56;
+  --red:#E74C3C;--red-deep:#C0392B;--red-light:rgba(192,57,43,0.2);
+  --bg:#070D18;--card:#0F172A;--card-subtle:#131D31;
+  --border:#1E2F56;--border-strong:#334155;
   --text:#F8FAFC;--sub:#94A3B8;--muted:#64748B;
-  --header-bg:#0F172A;--kanban-bg:#111C33;
+  --header-bg:#0F172A;--kanban-bg:#0A1220;
 }
 body{
   background:var(--bg);color:var(--text);
   font-family:'Inter','Noto Sans Ethiopic',sans-serif;
-  transition:background .3s,color .3s;min-height:100vh;
+  transition:background .25s,color .25s;min-height:100vh;
 }
 .brand-title{font-family:'Playfair Display',serif;}
 .hide-scroll::-webkit-scrollbar{display:none;}
@@ -39,66 +47,61 @@ body{
 
 /* SIDEBAR */
 #sidebar{position:fixed;inset:0;z-index:200;display:flex;pointer-events:none;}
-#sideBackdrop{flex:1;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:0;transition:opacity .3s;}
-#sidePanel{width:80%;max-width:320px;background:var(--white);height:100%;overflow-y:auto;transform:translateX(-100%);transition:transform .32s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-right:1px solid var(--border);}
+#sideBackdrop{flex:1;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);opacity:0;transition:opacity .3s;}
+#sidePanel{width:80%;max-width:300px;background:var(--card);height:100%;overflow-y:auto;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-right:1px solid var(--border);}
 #sidebar.open #sidePanel{transform:translateX(0);}
 #sidebar.open #sideBackdrop{opacity:1;}
 #sidebar.open{pointer-events:all;}
-.side-head{background:linear-gradient(135deg,var(--red-deep),var(--red));padding:36px 20px 20px;color:white;position:relative;}
-.side-item{display:flex;align-items:center;gap:12px;padding:12px 20px;cursor:pointer;font-size:13px;font-weight:700;color:var(--text);transition:background .15s;}
-.side-item:active{background:var(--off);}
-.side-item.active{color:var(--red);background:var(--off);border-left:4px solid var(--red);}
-.side-item i{width:20px;text-align:center;color:var(--sub);}
+.side-head{background:linear-gradient(135deg,var(--red-deep),var(--red));padding:34px 18px 18px;color:white;position:relative;}
+.side-item{display:flex;align-items:center;gap:12px;padding:12px 18px;cursor:pointer;font-size:12px;font-weight:700;color:var(--text);transition:background .15s;}
+.side-item:active{background:var(--card-subtle);}
+.side-item.active{color:var(--red);background:var(--card-subtle);border-left:4px solid var(--red);}
+.side-item i{width:18px;text-align:center;color:var(--sub);}
 .side-item.active i{color:var(--red);}
 
-/* KANBAN CARDS */
-.kanban-box{background:var(--kanban-bg);border:1px solid var(--border);border-radius:22px;display:flex;flex-direction:column;min-height:480px;}
-.order-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 12px;transition:all .2s;position:relative;}
-.order-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08);}
+/* KANBAN CARDS (SERIOUS / HIGH-DENSITY EDGES) */
+.kanban-box{background:var(--card);border:1.5px solid var(--border);border-radius:14px;display:flex;flex-direction:column;min-height:500px;}
+.order-card{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px 11px;transition:all .15s;position:relative;}
+.order-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08);}
 .order-card.new-pulse{border-left:5px solid #0284C7;}
 .order-card.kitchen-active{border-left:5px solid #F59E0B;}
-.order-card.dine-active{border-left:5px solid #6366F1;background:rgba(99,102,241,0.04);}
+.order-card.dine-active{border-left:5px solid #6366F1;background:rgba(99,102,241,0.03);}
 .order-card.pay-verify{border:2px solid #10B981;animation:payGlow 1.5s infinite;}
 
-@keyframes payGlow{0%,100%{box-shadow:0 0 0 rgba(16,185,129,0);}50%{box-shadow:0 0 20px rgba(16,185,129,.35);}}
+@keyframes payGlow{0%,100%{box-shadow:0 0 0 rgba(16,185,129,0);}50%{box-shadow:0 0 16px rgba(16,185,129,.35);}}
 
-/* TIMERS */
-.timer-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:800;font-family:monospace;}
-.timer-normal{background:#DCFCE7;color:#166534;}
-body.dark .timer-normal{background:#064E3B;color:#6EE7B7;}
-.timer-warn{background:#FEF9C3;color:#854D0E;}
-body.dark .timer-warn{background:#713F12;color:#FDE047;}
-.timer-overdue{background:#FEE2E2;color:#991B1B;animation:pulse 1s infinite;}
-body.dark .timer-overdue{background:#7F1D1D;color:#FCA5A5;}
+/* TIMERS & TIME TICKERS */
+.timer-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:6px;font-size:10px;font-weight:800;font-family:monospace;}
+.timer-normal{background:#DCFCE7;color:#166534;border:1px solid #BBF7D0;}
+body.dark .timer-normal{background:#064E3B;color:#6EE7B7;border:1px solid #047857;}
+.timer-warn{background:#FEF9C3;color:#854D0E;border:1px solid #FEF08A;}
+body.dark .timer-warn{background:#713F12;color:#FDE047;border:1px solid #A16207;}
+.timer-overdue{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA;animation:pulse 1s infinite;}
+body.dark .timer-overdue{background:#7F1D1D;color:#FCA5A5;border:1px solid #B91C1C;}
 
 /* FLOOR MAP CELLS */
-.floor-cell{padding:7px 4px;border-radius:12px;border:1.5px solid var(--border);text-align:center;cursor:pointer;transition:all .18s;position:relative;}
+.floor-cell{padding:6px 3px;border-radius:8px;border:1.5px solid var(--border);text-align:center;cursor:pointer;transition:all .15s;position:relative;}
 .floor-cell:hover{transform:scale(1.04);}
 
-/* MODALS */
-.overlay{display:none;position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px;}
-.overlay.open{display:flex;}
-.sheet-card{background:var(--white);border:1px solid var(--border);border-radius:24px;width:100%;max-width:540px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;}
-
-/* TOAST STACK */
-#toastStack{position:fixed;bottom:20px;right:16px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
-.toast-item{background:#1E293B;border:1px solid #334155;color:#F8FAFC;padding:10px 14px;border-radius:14px;font-size:12px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:all;max-width:300px;}
-
 /* CALL STRIP CHIPS */
-.call-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:#881337;border:1px solid #E11D48;border-radius:12px;font-size:11px;font-weight:800;color:#FCA5A5;cursor:pointer;}
+.call-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;background:#881337;border:1px solid #E11D48;border-radius:8px;font-size:11px;font-weight:800;color:#FCA5A5;cursor:pointer;}
 
 /* MOBILE KANBAN TAB SELECTOR */
-.mobile-kanban-tab{flex:1;padding:8px 4px;text-align:center;font-size:10px;font-weight:800;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--sub);transition:all .15s;white-space:nowrap;}
+.mobile-kanban-tab{flex:1;padding:7px 3px;text-align:center;font-size:10px;font-weight:800;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--sub);transition:all .15s;white-space:nowrap;}
 .mobile-kanban-tab.active{background:var(--red);color:white;border-color:var(--red);}
+
+/* ADMIN BROADCAST STRIP */
+#adminBroadcastStrip{animation:slideDown .3s ease-out;}
+@keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
 </style>
 </head>
-<body class="p-2 sm:p-4 dark" onclick="initAudio()">
+<body class="" onclick="initAudio()">
 
 <!-- TOAST STACK -->
-<div id="toastStack"></div>
+<div id="toastStack" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
 <!-- SOUND UNLOCK BANNER -->
-<div id="audioUnlockBanner" onclick="initAudio()" class="bg-amber-600 text-slate-950 p-2.5 rounded-xl text-center text-xs font-black mb-2.5 cursor-pointer animate-bounce">
+<div id="audioUnlockBanner" onclick="initAudio()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 p-2 rounded-xl text-center text-xs font-black mb-2 cursor-pointer shadow-md animate-bounce">
   🔔 ድምፅ ለማንቃት እዚህ ስክሪኑን አንዴ ይጫኑ (Click anywhere to enable live Sound Alerts)
 </div>
 
@@ -107,67 +110,111 @@ body.dark .timer-overdue{background:#7F1D1D;color:#FCA5A5;}
   <div id="sidePanel">
     <div class="side-head">
       <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl bg-white text-slate-900 flex items-center justify-center text-xl font-bold shadow-lg">☕</div>
+        <div class="w-10 h-10 rounded-xl bg-white text-slate-900 flex items-center justify-center text-xl font-bold shadow-md">☕</div>
         <div>
           <h2 class="brand-title text-xl font-black">Ours Cafe</h2>
           <p class="text-xs text-white/80">Staff & POS Engine v7.0</p>
         </div>
       </div>
     </div>
+    
+    <!-- Theme Switcher in Sidebar -->
+    <div class="p-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs font-bold">
+      <span class="text-slate-700 dark:text-slate-300"><i class="fa-solid fa-moon mr-2 text-slate-400"></i>Dark / Light Mode</span>
+      <button onclick="toggleTheme()" class="w-10 h-6 bg-slate-300 dark:bg-emerald-600 rounded-full p-0.5 transition-colors">
+        <div id="sideDarkToggleSW" class="w-5 h-5 bg-white rounded-full transition-transform duration-200"></div>
+      </button>
+    </div>
+
     <div class="py-2 flex-1">
       <div class="side-item active" onclick="closeSidebar();"><i class="fa-solid fa-chart-kanban"></i> 1. የቀጥታ POS Kanban</div>
-      <div class="side-item" onclick="closeSidebar();openManualOrderModal();"><i class="fa-solid fa-plus-circle text-emerald-400"></i> 2. አዲስ ትዕዛዝ መዝግብ (Manual)</div>
+      <div class="side-item" onclick="closeSidebar();openManualOrderModal();"><i class="fa-solid fa-plus-circle text-emerald-500"></i> 2. አዲስ ትዕዛዝ መዝግብ (Manual)</div>
       <div class="side-item" onclick="closeSidebar();scrollToSection('floorMapSection');"><i class="fa-solid fa-map-location-dot"></i> 3. Live Floor Map</div>
       <div class="side-item" onclick="closeSidebar();openStockModal();"><i class="fa-solid fa-boxes-stacked"></i> 4. የምግብ ክምችት (Stock)</div>
       <div class="side-item" onclick="closeSidebar();openShiftSummary();"><i class="fa-solid fa-vault"></i> 5. የዕለቱ ሂሳብ መዝገብ (Shift)</div>
+      <div class="side-item" onclick="closeSidebar();openOrderHistoryModal();"><i class="fa-solid fa-clock-rotate-left text-sky-500"></i> 6. የቀኑ ትዕዛዞች ታሪክ (History)</div>
+    </div>
+
+    <div class="p-3.5 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400">
+      <p class="font-bold text-slate-800 dark:text-slate-200">Ours Cafe POS</p>
+      <p>Kombolcha, Ethiopia</p>
     </div>
   </div>
   <div id="sideBackdrop" onclick="closeSidebar()"></div>
 </div>
 
 <!-- ═════ 2. TOP HUD ═════ -->
-<header class="flex justify-between items-center gap-2 pb-2 mb-2 border-b border-slate-800" id="topHeader">
-  <div class="flex items-center gap-2.5">
-    <button onclick="openSidebar()" class="w-10 h-10 rounded-2xl bg-white/10 hover:bg-white/20 border border-slate-700 flex items-center justify-center text-base">
+<header class="flex justify-between items-center gap-2 pb-2 mb-2 border-b border-slate-200 dark:border-slate-800" id="topHeader">
+  <div class="flex items-center gap-2">
+    <button onclick="openSidebar()" class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 flex items-center justify-center text-sm border border-slate-300 dark:border-slate-700">
       <i class="fa-solid fa-bars"></i>
     </button>
     <div>
-      <h1 class="text-lg sm:text-xl font-black tracking-tight flex items-center gap-1.5">
-        <span class="brand-title">Ours Cafe</span>
-        <span class="text-[10px] bg-[#C0392B] text-white px-2 py-0.5 rounded-full font-black">POS v7.0</span>
+      <h1 class="text-base sm:text-lg font-black tracking-tight flex items-center gap-1.5">
+        <span class="brand-title text-slate-900 dark:text-white">Ours Cafe</span>
+        <span class="text-[9px] bg-[#C0392B] text-white px-2 py-0.5 rounded font-black tracking-wider uppercase">POS v7.0</span>
       </h1>
-      <p class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5 mt-0.5">
-        <span class="text-emerald-400 font-bold flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> <span id="syncStatus">Live Sync</span>
+      <p class="text-[10px] text-slate-600 dark:text-slate-400 font-semibold flex items-center gap-1 mt-0.5">
+        <span class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> <span id="syncStatus">Live Sync</span>
         </span>
         <span>•</span>
-        <span id="liveClock" class="font-mono font-bold text-slate-200">--:--:--</span>
+        <span id="liveClock" class="font-mono text-slate-700 dark:text-slate-300 font-bold">--:--:--</span>
       </p>
     </div>
   </div>
 
   <div class="flex items-center gap-1.5">
-    <!-- Quick Manual Order Button -->
+    <!-- Quick Theme Toggle -->
+    <button onclick="toggleTheme()" id="topThemeBtn" class="w-8 h-8 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center text-slate-700 dark:text-amber-400">
+      <i id="topThemeIcon" class="fa-solid fa-moon"></i>
+    </button>
+    <!-- History Button -->
+    <button onclick="openOrderHistoryModal()" class="w-8 h-8 bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-700 rounded-xl text-xs font-bold flex items-center justify-center" title="የቀኑ ትዕዛዞች ታሪክ">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+    </button>
+    <!-- Manual Order Button -->
     <button onclick="openManualOrderModal()" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow">
       <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">አዲስ እዘዝ</span>
     </button>
-    <div class="px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1">
-      <span class="text-amber-400">🪑</span>
-      <span id="tableOccupancyText" class="font-mono text-emerald-400 font-black">0/15</span>
+    <!-- Table Occupancy -->
+    <div class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1 text-slate-800 dark:text-slate-100">
+      <span>🪑</span>
+      <span id="tableOccupancyText" class="font-mono text-emerald-600 dark:text-emerald-400 font-black">0/15</span>
     </div>
-    <button onclick="toggleMute()" id="topMuteBtn" class="w-8 h-8 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center text-emerald-400">
+    <!-- Sound Toggle -->
+    <button onclick="toggleMute()" id="topMuteBtn" class="w-8 h-8 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold flex items-center justify-center text-emerald-600 dark:text-emerald-400">
       <i id="topMuteIcon" class="fa-solid fa-volume-high"></i>
     </button>
-    <button onclick="fetchStaffData()" class="w-8 h-8 bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-bold flex items-center justify-center">
+    <!-- Refresh Button -->
+    <button onclick="fetchStaffData()" class="w-8 h-8 bg-emerald-600/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-bold flex items-center justify-center hover:bg-emerald-600/30">
       <i class="fa-solid fa-arrows-rotate"></i>
     </button>
   </div>
 </header>
 
-<!-- ═════ 3. URGENT CALLS ═════ -->
-<div id="urgentCallsContainer" class="mb-3 hidden">
-  <div class="p-2.5 bg-rose-950 border-2 border-rose-500 rounded-2xl shadow-xl">
-    <div class="flex items-center gap-2 mb-1.5">
+<!-- ═════ 3. ADMIN BROADCAST STRIP (WITH PERSISTENT DISMISS) ═════ -->
+<div id="adminAnnouncementBanner" class="mb-2.5 hidden">
+  <div class="p-2.5 bg-amber-500/15 border-2 border-amber-500/60 rounded-xl text-xs flex justify-between items-start gap-2 text-slate-800 dark:text-slate-100 shadow-sm" id="adminBroadcastStrip">
+    <div class="flex items-start gap-2 flex-1">
+      <span class="text-base">📢</span>
+      <div>
+        <div class="flex items-center gap-1.5 font-black text-amber-700 dark:text-amber-300 text-[11px]">
+          <span id="annSenderTxt">አቶ Osman Ahmed</span>
+          <span class="text-[9px] px-1.5 py-0.2 bg-amber-500 text-slate-950 rounded font-black uppercase" id="annPriorityBadge">Normal</span>
+          <span class="text-[9px] text-slate-500 dark:text-slate-400 font-mono" id="annTimeTxt">--:--</span>
+        </div>
+        <p class="text-xs font-semibold mt-0.5 leading-snug" id="annMessageTxt">መልዕክት</p>
+      </div>
+    </div>
+    <button onclick="dismissAnnouncementBanner()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white font-bold text-xs px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800">✕ ዝጋ</button>
+  </div>
+</div>
+
+<!-- ═════ 4. URGENT CALLS ═════ -->
+<div id="urgentCallsContainer" class="mb-2.5 hidden">
+  <div class="p-2 bg-rose-950 border-2 border-rose-500 rounded-xl shadow-lg">
+    <div class="flex items-center gap-2 mb-1">
       <span class="animate-bounce text-sm">🚨</span>
       <h3 class="text-xs font-black text-rose-300">አስቸኳይ ጥሪ (Urgent Calls) <span id="urgentCallCount" class="bg-rose-600 text-white text-[9px] px-1.5 rounded-full">0</span></h3>
     </div>
@@ -175,145 +222,188 @@ body.dark .timer-overdue{background:#7F1D1D;color:#FCA5A5;}
   </div>
 </div>
 
-<!-- ═════ 4. FLOOR MAP & FILTER STRIP ═════ -->
+<!-- ═════ 5. FLOOR MAP & FILTER STRIP ═════ -->
 <section class="mb-3" id="floorMapSection">
-  <div class="flex justify-between items-center mb-1.5 text-xs font-bold text-slate-400">
+  <div class="flex justify-between items-center mb-1 text-[11px] font-bold text-slate-600 dark:text-slate-400">
     <span>🗺️ የቀጥታ የጠረጴዛዎች ሁኔታ (Floor Map - ጠቅ በማድረግ ይምረጡ)</span>
-    <button id="clearTableFilterBtn" onclick="clearTableFilter()" class="text-[#C0392B] hidden text-[11px]">✕ ማጣሪያ አጥፋ (Show All)</button>
+    <button id="clearTableFilterBtn" onclick="clearTableFilter()" class="text-[#C0392B] hidden text-[11px] font-black">✕ ማጣሪያ አጥፋ (Show All)</button>
   </div>
   <div class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-15 gap-1.5" id="tableMatrixGrid"></div>
 </section>
 
-<!-- ═════ MOBILE KANBAN SELECTOR (INCLUDES 1+2 COMBO VIEW) ═════ -->
+<!-- ═════ MOBILE KANBAN SELECTOR (1+2 COMBO VIEW) ═════ -->
 <div class="flex md:hidden gap-1 mb-2.5 overflow-x-auto pb-1" id="mobileColumnTabs">
   <button class="mobile-kanban-tab active" id="mtab-all" onclick="setMobileKanbanCol('all', this)">ሁሉም</button>
-  <button class="mobile-kanban-tab text-amber-300 border-amber-500/40" id="mtab-cook" onclick="setMobileKanbanCol('cook', this)">🔥 New & Kitchen</button>
+  <button class="mobile-kanban-tab text-amber-700 dark:text-amber-300 border-amber-500/50 font-black" id="mtab-cook" onclick="setMobileKanbanCol('cook', this)">🔥 New & Kitchen</button>
   <button class="mobile-kanban-tab" id="mtab-new" onclick="setMobileKanbanCol('new', this)">New <span id="mBadgeNew" class="text-[9px]">0</span></button>
   <button class="mobile-kanban-tab" id="mtab-kitchen" onclick="setMobileKanbanCol('kitchen', this)">Kit <span id="mBadgeKit" class="text-[9px]">0</span></button>
   <button class="mobile-kanban-tab" id="mtab-eating" onclick="setMobileKanbanCol('eating', this)">Eat <span id="mBadgeEat" class="text-[9px]">0</span></button>
   <button class="mobile-kanban-tab" id="mtab-verify" onclick="setMobileKanbanCol('verify', this)">Pay <span id="mBadgeVer" class="text-[9px]">0</span></button>
 </div>
 
-<!-- ═════ 5. 4-COLUMN MASTER KANBAN BOARD ═════ -->
-<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-3.5 mb-6" id="kanbanBoardWrapper">
+<!-- ═════ 6. 4-COLUMN HIGH-DENSITY KANBAN BOARD ═════ -->
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2.5 mb-6" id="kanbanBoardWrapper">
 
-  <!-- COL 1: NEW -->
-  <div class="kanban-box p-3" id="kanbanColNew">
-    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-700 text-xs font-bold text-sky-400">
+  <!-- COL 1: NEW ORDERS -->
+  <div class="kanban-box p-2.5" id="kanbanColNew">
+    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-200 dark:border-slate-800 text-xs font-bold text-sky-600 dark:text-sky-400">
       <span>1. New Orders (አዲስ)</span>
-      <span id="badgeNew" class="bg-sky-900 px-2 rounded-full">0</span>
+      <span id="badgeNew" class="bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border border-sky-300 dark:border-sky-700 px-2 py-0.5 rounded-full font-black text-[10px]">0</span>
     </div>
-    <div class="space-y-2.5 overflow-y-auto max-h-[580px] hide-scroll flex-1" id="colNewOrders"></div>
+    <div class="space-y-2 overflow-y-auto max-h-[600px] hide-scroll flex-1" id="colNewOrders"></div>
   </div>
 
-  <!-- COL 2: KITCHEN -->
-  <div class="kanban-box p-3" id="kanbanColKitchen">
-    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-700 text-xs font-bold text-amber-400">
+  <!-- COL 2: IN KITCHEN -->
+  <div class="kanban-box p-2.5" id="kanbanColKitchen">
+    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-200 dark:border-slate-800 text-xs font-bold text-amber-600 dark:text-amber-400">
       <span>2. In Kitchen (በዝግጅት ላይ ⏱️)</span>
-      <span id="badgeKitchen" class="bg-amber-900 px-2 rounded-full">0</span>
+      <span id="badgeKitchen" class="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded-full font-black text-[10px]">0</span>
     </div>
-    <div class="space-y-2.5 overflow-y-auto max-h-[580px] hide-scroll flex-1" id="colKitchenOrders"></div>
+    <div class="space-y-2 overflow-y-auto max-h-[600px] hide-scroll flex-1" id="colKitchenOrders"></div>
   </div>
 
-  <!-- COL 3: EATING (DINE-IN) -->
-  <div class="kanban-box p-3" id="kanbanColEating">
-    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-700 text-xs font-bold text-indigo-400">
+  <!-- COL 3: EATING -->
+  <div class="kanban-box p-2.5" id="kanbanColEating">
+    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-200 dark:border-slate-800 text-xs font-bold text-indigo-600 dark:text-indigo-400">
       <span>3. Eating (በመመገብ ላይ 🍽️)</span>
-      <span id="badgeDineIn" class="bg-indigo-900 px-2 rounded-full">0</span>
+      <span id="badgeDineIn" class="bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-700 px-2 py-0.5 rounded-full font-black text-[10px]">0</span>
     </div>
-    <div class="space-y-2.5 overflow-y-auto max-h-[580px] hide-scroll flex-1" id="colDineInOrders"></div>
+    <div class="space-y-2 overflow-y-auto max-h-[600px] hide-scroll flex-1" id="colDineInOrders"></div>
   </div>
 
   <!-- COL 4: VERIFY PAYMENT -->
-  <div class="kanban-box p-3 bg-[#101F38]" id="kanbanColVerify">
-    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-700 text-xs font-bold text-emerald-400">
-      <span>4. Verify Payment (ደረሰኝ)</span>
-      <span id="badgeVerify" class="bg-emerald-900 px-2 rounded-full">0</span>
+  <div class="kanban-box p-2.5 bg-emerald-50/40 dark:bg-[#0E1B2D]" id="kanbanColVerify">
+    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-200 dark:border-slate-800 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+      <span>4. Verify Payment (CBE ደረሰኝ)</span>
+      <span id="badgeVerify" class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 px-2 py-0.5 rounded-full font-black text-[10px]">0</span>
     </div>
-    <div class="space-y-2.5 overflow-y-auto max-h-[580px] hide-scroll flex-1" id="colVerifyOrders"></div>
+    <div class="space-y-2 overflow-y-auto max-h-[600px] hide-scroll flex-1" id="colVerifyOrders"></div>
   </div>
 
 </section>
 
-<!-- ═════ 6. MODALS ═════ -->
+<!-- ═════ 7. MODALS ═════ -->
 
-<!-- MODAL 1: INSPECTOR -->
+<!-- MODAL 1: RECEIPT SCREENSHOT INSPECTOR (WITH DIRECT DRIVE CDN LOADER) -->
 <div id="inspectorModal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl max-w-md w-full text-center space-y-3">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-      <h3 class="text-sm font-bold text-emerald-400" id="inspTitle">የደረሰኝ ስክሪንሾት መርማሪ</h3>
-      <button onclick="document.getElementById('inspectorModal').classList.add('hidden')" class="text-gray-400 font-bold text-lg">✕</button>
+  <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-5 rounded-2xl max-w-md w-full text-center space-y-3 shadow-2xl">
+    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+      <h3 class="text-sm font-black text-emerald-600 dark:text-emerald-400" id="inspTitle">የCBE ደረሰኝ ስክሪንሾት</h3>
+      <button onclick="document.getElementById('inspectorModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 dark:hover:text-white font-bold text-lg">✕</button>
     </div>
-    <div class="bg-black p-2 rounded-xl max-h-[55vh] overflow-auto flex justify-center items-center">
-      <img id="inspImg" src="" class="max-w-full rounded" alt="Receipt">
+    
+    <div class="bg-slate-100 dark:bg-black p-2 rounded-xl max-h-[55vh] overflow-auto flex justify-center items-center border border-slate-200 dark:border-slate-800">
+      <img id="inspImg" src="" class="max-w-full rounded shadow object-contain" alt="Receipt">
     </div>
-    <div class="flex gap-2 pt-2">
-      <button onclick="document.getElementById('inspectorModal').classList.add('hidden')" class="flex-1 py-2 bg-slate-800 rounded-xl text-xs font-bold">ዝጋ</button>
-      <button id="btnApprove" class="flex-1 py-2 bg-emerald-600 rounded-xl text-xs font-bold text-white">ክፍያ አረጋግጥና ዝጋ ✓</button>
+
+    <div class="flex items-center justify-between text-xs px-1">
+      <a id="btnOpenDriveLink" href="#" target="_blank" class="text-blue-600 dark:text-blue-400 font-bold hover:underline hidden flex items-center gap-1">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>ዋናውን ፎቶ ክፈት</span>
+      </a>
+      <span class="text-[10px] text-slate-400">ደረሰኙ ትክክለኛ መሆኑን ያረጋግጡ</span>
+    </div>
+
+    <div class="flex gap-2 pt-1">
+      <button onclick="document.getElementById('inspectorModal').classList.add('hidden')" class="flex-1 py-2 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold">ዝጋ</button>
+      <button id="btnApprove" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-xs font-black text-white shadow">ክፍያ አረጋግጥና ዝጋ ✓</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL 2: MANUAL ORDER POS MODAL -->
 <div id="manualOrderModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl max-w-lg w-full space-y-3 max-h-[90vh] flex flex-col">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-      <h3 class="text-sm font-black text-emerald-400"><i class="fa-solid fa-cart-plus mr-1"></i> አዲስ ትዕዛዝ መዝግብ (Manual Order)</h3>
-      <button onclick="closeManualOrderModal()" class="text-gray-400 font-bold text-base">✕</button>
+  <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-5 rounded-2xl max-w-lg w-full space-y-3 max-h-[90vh] flex flex-col shadow-2xl text-slate-800 dark:text-slate-100">
+    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+      <h3 class="text-sm font-black text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-cart-plus mr-1"></i> አዲስ ትዕዛዝ መዝግብ (Manual Order)</h3>
+      <button onclick="closeManualOrderModal()" class="text-slate-400 font-bold text-base">✕</button>
     </div>
     
     <div class="flex gap-2 text-xs">
       <div class="w-1/3">
-        <label class="block text-gray-400 mb-1 font-bold">ጠረጴዛ ቁጥር፦</label>
-        <select id="manualTableSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 font-bold outline-none"></select>
+        <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ጠረጴዛ ቁጥር፦</label>
+        <select id="manualTableSelect" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-2 font-bold outline-none"></select>
       </div>
       <div class="w-2/3">
-        <label class="block text-gray-400 mb-1 font-bold">ምግብ ፈልግ፦</label>
-        <input type="text" id="manualMenuSearch" placeholder="የምግብ ስም ፈልግ..." oninput="renderManualMenuItems()" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 text-xs outline-none">
+        <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ምግብ ፈልግ፦</label>
+        <input type="text" id="manualMenuSearch" placeholder="የምግብ ስም ፈልግ..." oninput="renderManualMenuItems()" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-2 text-xs outline-none">
       </div>
     </div>
 
     <!-- Menu Item Picker List -->
-    <div class="flex-1 overflow-y-auto space-y-1.5 max-h-48 p-1 border border-slate-800 rounded-xl" id="manualMenuPickerList"></div>
+    <div class="flex-1 overflow-y-auto space-y-1.5 max-h-48 p-1 border border-slate-200 dark:border-slate-800 rounded-xl" id="manualMenuPickerList"></div>
 
     <!-- Selected Items Box -->
-    <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1 text-xs">
+    <div class="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1 text-xs">
       <div class="flex justify-between font-bold">
         <span>የተመረጡ ምግቦች፦</span>
-        <span class="text-emerald-400 font-black" id="manualTotalText">0 ETB</span>
+        <span class="text-emerald-600 dark:text-emerald-400 font-black font-mono" id="manualTotalText">0 ETB</span>
       </div>
-      <div id="manualSelectedSummary" class="text-gray-300 text-[11px] leading-relaxed max-h-20 overflow-y-auto">ምንም ምግብ አልተመረጠም</div>
+      <div id="manualSelectedSummary" class="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed max-h-20 overflow-y-auto">ምንም ምግብ አልተመረጠም</div>
     </div>
 
-    <input type="text" id="manualOrderNote" placeholder="ልዩ ማስታወሻ (አማራጭ)..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 text-xs outline-none">
+    <input type="text" id="manualOrderNote" placeholder="ልዩ ማስታወሻ (ስኳር እንዳይበዛ፣ በደንብ የበሰለ...)" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-2 text-xs outline-none">
 
     <div class="flex gap-2 pt-1">
-      <button onclick="closeManualOrderModal()" class="flex-1 py-2 bg-slate-800 rounded-xl text-xs font-bold">ሰርዝ</button>
-      <button onclick="submitManualPOSOrder()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black">ትዕዛዙን ላክ ✓</button>
+      <button onclick="closeManualOrderModal()" class="flex-1 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold">ሰርዝ</button>
+      <button onclick="submitManualPOSOrder()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow">ትዕዛዙን ላክ ✓</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL 3: STOCK & INVENTORY MODAL -->
 <div id="stockModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-900 border border-slate-700 p-5 rounded-2xl max-w-lg w-full space-y-3 max-h-[90vh] flex flex-col">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-      <h3 class="text-sm font-black text-amber-400"><i class="fa-solid fa-boxes-stacked mr-1"></i> የምግብ ክምችት መቆጣጠሪያ (Stock Control)</h3>
-      <button onclick="closeStockModal()" class="text-gray-400 font-bold text-base">✕</button>
+  <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-5 rounded-2xl max-w-lg w-full space-y-3 max-h-[90vh] flex flex-col shadow-2xl text-slate-800 dark:text-slate-100">
+    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+      <h3 class="text-sm font-black text-amber-600 dark:text-amber-400"><i class="fa-solid fa-boxes-stacked mr-1"></i> የምግብ ክምችት መቆጣጠሪያ (Stock Control)</h3>
+      <button onclick="closeStockModal()" class="text-slate-400 font-bold text-base">✕</button>
     </div>
     
-    <input type="text" id="stockSearchInput" placeholder="ምግብ ለመፈለግ ይፃፉ..." oninput="renderStockItemList()" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 text-xs outline-none">
+    <input type="text" id="stockSearchInput" placeholder="ምግብ ለመፈለግ ይፃፉ..." oninput="renderStockItemList()" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-2 text-xs outline-none">
 
     <div class="flex-1 overflow-y-auto space-y-2 p-1 max-h-[60vh]" id="stockItemListContainer"></div>
   </div>
 </div>
 
+<!-- MODAL 4: ALL ORDER HISTORY MODAL (የቀኑ ሙሉ ትዕዛዞች ታሪክ) -->
+<div id="orderHistoryModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-3 sm:p-4 z-50">
+  <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-4 sm:p-5 rounded-2xl max-w-2xl w-full space-y-3 max-h-[92vh] flex flex-col shadow-2xl text-slate-800 dark:text-slate-100">
+    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+      <h3 class="text-sm font-black text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
+        <i class="fa-solid fa-clock-rotate-left"></i> <span>የቀኑ ሙሉ ትዕዛዞች ታሪክ (Order History)</span>
+      </h3>
+      <button onclick="closeOrderHistoryModal()" class="text-slate-400 font-bold text-base">✕</button>
+    </div>
+
+    <div class="flex gap-2 text-xs">
+      <input type="text" id="historySearchInput" placeholder="በጠረጴዛ ወይም በምግብ ፈልግ..." oninput="renderOrderHistoryList()" class="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs outline-none">
+      <select id="historyStatusFilter" onchange="renderOrderHistoryList()" class="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-xs font-bold outline-none">
+        <option value="all">ሁሉም (All)</option>
+        <option value="Paid">የተከፈሉ (Paid)</option>
+        <option value="Served">በመመገብ ላይ (Served)</option>
+        <option value="Kitchen">በኩሽና (Kitchen)</option>
+        <option value="Cancelled">የተሰረዙ (Cancelled)</option>
+      </select>
+    </div>
+
+    <!-- History Items List Container -->
+    <div class="flex-1 overflow-y-auto space-y-2 p-1 max-h-[60vh]" id="historyItemsContainer"></div>
+
+    <div class="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
+      <span class="font-bold text-slate-500" id="historyCountText">0 ትዕዛዞች</span>
+      <button onclick="closeOrderHistoryModal()" class="px-4 py-1.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold">ዝጋ</button>
+    </div>
+  </div>
+</div>
+
 <script>
+// ─── MASTER APPS SCRIPT URL ───
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMtvpZ7KbadwL9kIKikpxSNB9xxzO30qE750Uxe7pX_Zj6V2iWbk3iZs_q31g8aZiW/exec";
 
 let localOrders = [];
 let localCalls = [];
 let localMenu = [];
+let localAnnouncements = [];
+let rawAllOrdersHistory = [];
 let isMuted = false;
 let audioUnlocked = false;
 let prevNewOrderCount = 0;
@@ -322,17 +412,39 @@ let activeMobileCol = 'all';
 let selectedFilterTable = null;
 let manualCart = {};
 
-// PERSISTENT STATUS LOCK (PREVENTS BOUNCE-BACK/REVERTING)
+// PERSISTENT STATUS & ANNOUNCEMENT LOCKS
 const statusLock = {};
 const archivedPaidIds = new Set(JSON.parse(localStorage.getItem('ours_archived_paid_ids') || '[]'));
+const dismissedAnnouncementIds = new Set(JSON.parse(localStorage.getItem('ours_dismissed_ann_ids') || '[]'));
 
 function showToast(msg, type = 'info') {
   const stack = document.getElementById('toastStack');
   const el = document.createElement('div');
-  el.className = `toast-item toast-${type}`;
+  el.className = `p-2.5 rounded-xl text-xs font-bold shadow-lg border text-white ${
+    type === 'success' ? 'bg-emerald-700 border-emerald-500' :
+    type === 'error' ? 'bg-rose-700 border-rose-500' : 'bg-slate-800 border-slate-700'
+  }`;
   el.innerHTML = msg;
   stack.appendChild(el);
   setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'all .3s'; setTimeout(() => el.remove(), 300); }, 3000);
+}
+
+// ─── THEME TOGGLER ───
+function toggleTheme(){
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  const sw = document.getElementById('sideDarkToggleSW');
+  if(sw) sw.classList.toggle('translate-x-4', isDark);
+  const icon = document.getElementById('topThemeIcon');
+  if(icon) icon.className = isDark ? "fa-solid fa-sun text-amber-400" : "fa-solid fa-moon text-slate-700";
+  localStorage.setItem('ours_staff_dark_theme', isDark ? '1' : '0');
+}
+if(localStorage.getItem('ours_staff_dark_theme') === '1'){
+  document.body.classList.add('dark');
+  const sw = document.getElementById('sideDarkToggleSW');
+  if(sw) sw.classList.add('translate-x-4');
+  const icon = document.getElementById('topThemeIcon');
+  if(icon) icon.className = "fa-solid fa-sun text-amber-400";
 }
 
 function initAudio() {
@@ -348,7 +460,7 @@ function initAudio() {
 
 function toggleMute() {
   isMuted = !isMuted;
-  document.getElementById('topMuteIcon').className = isMuted ? "fa-solid fa-volume-xmark text-rose-400" : "fa-solid fa-volume-high text-emerald-400";
+  document.getElementById('topMuteIcon').className = isMuted ? "fa-solid fa-volume-xmark text-rose-500" : "fa-solid fa-volume-high text-emerald-600 dark:text-emerald-400";
 }
 
 function playAlertSound(type) {
@@ -360,8 +472,8 @@ function playAlertSound(type) {
     osc.connect(gain); gain.connect(ctx.destination);
     
     if (type === 'order') {
-      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15); // A5
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
       gain.gain.setValueAtTime(0.4, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
       osc.start(); osc.stop(ctx.currentTime + 0.6);
@@ -396,32 +508,55 @@ function normalizeOrder(raw) {
   };
 }
 
-// ─── LIVE PREPARATION TIME CALCULATION ───
-function getPreparationTimeBadge(timestamp) {
-  if (!timestamp) return `<span class="timer-badge timer-normal">⏱️ 0m</span>`;
+// ─── GOOGLE DRIVE IMAGE URL CONVERTER (HIGH-RES CDN) ───
+function formatDriveUrl(url) {
+  if (!url) return '';
+  const clean = String(url).trim();
+  if (clean.startsWith('data:image')) return clean;
+  
+  const match = clean.match(/(?:id=|\/d\/)([a-zA-Z0-9_-]{20,})/);
+  if (match && match[1]) {
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1200`;
+  }
+  return clean;
+}
+
+// ─── LIVE ELAPSED SECONDS & MINUTES TIME TICKER ───
+function getLiveElapsedTime(timestamp) {
+  if (!timestamp) return { badge: `<span class="timer-badge timer-normal">⏱️ 0m</span>`, timeStr: '--:--:--' };
   try {
-    const orderTime = new Date(timestamp).getTime();
-    if (isNaN(orderTime)) return `<span class="timer-badge timer-normal">⏱️ 1m</span>`;
-    const diffMins = Math.max(0, Math.floor((Date.now() - orderTime) / 60000));
+    const orderDate = new Date(timestamp);
+    if (isNaN(orderDate.getTime())) return { badge: `<span class="timer-badge timer-normal">⏱️ 0m</span>`, timeStr: '--:--:--' };
+    
+    const timeStr = orderDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    const diffSecs = Math.max(0, Math.floor((Date.now() - orderDate.getTime()) / 1000));
+    const mins = Math.floor(diffSecs / 60);
+    const secs = diffSecs % 60;
     
     let cls = 'timer-normal';
-    if (diffMins >= 20) cls = 'timer-overdue';
-    else if (diffMins >= 10) cls = 'timer-warn';
+    if (mins >= 20) cls = 'timer-overdue';
+    else if (mins >= 10) cls = 'timer-warn';
     
-    return `<span class="timer-badge ${cls}">⏱️ ${diffMins}m</span>`;
+    const formatted = mins > 0 ? `${mins}m ${secs < 10 ? '0' : ''}${secs}s` : `${secs}s`;
+    return {
+      badge: `<span class="timer-badge ${cls}">⏱️ ${formatted}</span>`,
+      timeStr: timeStr
+    };
   } catch(e) {
-    return `<span class="timer-badge timer-normal">⏱️ 0m</span>`;
+    return { badge: `<span class="timer-badge timer-normal">⏱️ 0m</span>`, timeStr: '--:--:--' };
   }
 }
 
-// ─── FETCH LIVE DATA WITH ROBUST TRIGGERS ───
+// ─── FETCH LIVE DATA ───
 async function fetchStaffData() {
   try {
     const res = await fetch(`${SCRIPT_URL}?action=getStaffData&t=${Date.now()}`);
     const data = await res.json();
     
     if (data.orders && Array.isArray(data.orders)) {
-      localOrders = data.orders.map(normalizeOrder).filter(ord => {
+      rawAllOrdersHistory = data.orders.map(normalizeOrder);
+
+      localOrders = rawAllOrdersHistory.filter(ord => {
         const idClean = String(ord.Order_ID).trim().toLowerCase();
         if (archivedPaidIds.has(idClean)) return false;
 
@@ -433,7 +568,6 @@ async function fetchStaffData() {
         return true;
       });
 
-      // 🔔 Sound Alert for New Orders
       const currentNewCount = localOrders.filter(o => String(o.Order_Status).toLowerCase() === 'new').length;
       if (currentNewCount > prevNewOrderCount) {
         playAlertSound('order');
@@ -457,12 +591,52 @@ async function fetchStaffData() {
       localMenu = data.menu;
     }
 
+    if (data.announcements && Array.isArray(data.announcements)) {
+      localAnnouncements = data.announcements;
+      renderAdminAnnouncementStrip();
+    }
+
     renderKanban();
     renderUrgentCalls();
     renderTableMatrix();
   } catch (e) {
     document.getElementById('syncStatus').innerText = `Syncing...`;
   }
+}
+
+// ─── ADMIN ANNOUNCEMENT BANNER (PERSISTENT DISMISSAL) ───
+function renderAdminAnnouncementStrip() {
+  const banner = document.getElementById('adminAnnouncementBanner');
+  if (!localAnnouncements.length) {
+    banner.classList.add('hidden');
+    return;
+  }
+  const latest = localAnnouncements[0];
+  const msgId = String(latest.Message_ID || latest.id || '').trim();
+
+  // If dismissed earlier, keep it hidden
+  if (msgId && dismissedAnnouncementIds.has(msgId)) {
+    banner.classList.add('hidden');
+    return;
+  }
+
+  document.getElementById('annSenderTxt').innerText = latest.Sender || 'አቶ Osman Ahmed';
+  document.getElementById('annPriorityBadge').innerText = latest.Priority || 'Normal';
+  document.getElementById('annTimeTxt').innerText = latest.Timestamp || '';
+  document.getElementById('annMessageTxt').innerText = latest.Message || '';
+  banner.classList.remove('hidden');
+}
+
+function dismissAnnouncementBanner() {
+  if (localAnnouncements.length) {
+    const latest = localAnnouncements[0];
+    const msgId = String(latest.Message_ID || latest.id || '').trim();
+    if (msgId) {
+      dismissedAnnouncementIds.add(msgId);
+      localStorage.setItem('ours_dismissed_ann_ids', JSON.stringify(Array.from(dismissedAnnouncementIds)));
+    }
+  }
+  document.getElementById('adminAnnouncementBanner').classList.add('hidden');
 }
 
 // ─── MOVE ORDER TO EATING ───
@@ -513,7 +687,7 @@ function moveToKitchen(orderId) {
   });
 }
 
-// ─── CANCEL / REJECT ORDER ───
+// ─── CANCEL ORDER ───
 function cancelOrder(orderId) {
   Swal.fire({
     title: 'ትዕዛዙ ይሰረዝ?',
@@ -577,7 +751,7 @@ function confirmCBEPayment(orderId) {
   });
 }
 
-// ─── RENDER 4-COLUMN KANBAN BOARD ───
+// ─── RENDER 4-COLUMN HIGH-DENSITY KANBAN BOARD ───
 function renderKanban() {
   const colNew = document.getElementById('colNewOrders');
   const colKitchen = document.getElementById('colKitchenOrders');
@@ -599,6 +773,7 @@ function renderKanban() {
     const note = ord.Customer_Note || '';
     const st = String(ord.Order_Status || 'New').toLowerCase().trim();
     const paySt = String(ord.Payment_Status || 'Unpaid').toLowerCase().trim();
+    const { badge: timerBadge, timeStr } = getLiveElapsedTime(ord.Timestamp);
 
     if (st === 'paid' || st === 'closed' || st === 'cancelled' || paySt === 'paid') return;
 
@@ -607,33 +782,41 @@ function renderKanban() {
       cV++;
       colVerify.innerHTML += `
         <div class="order-card pay-verify">
-          <div class="flex justify-between font-black text-sm mb-1">
-            <span>ጠረጴዛ #${tNo}</span>
-            <span class="text-emerald-400 font-bold">${total}</span>
+          <div class="flex justify-between items-center font-black text-xs mb-1">
+            <span class="text-slate-900 dark:text-white font-extrabold text-sm">ጠረጴዛ #${tNo}</span>
+            <span class="text-emerald-600 dark:text-emerald-400 font-mono font-black">${total}</span>
           </div>
-          <p class="text-xs text-slate-200 mb-1 font-bold">📱 CBE ደረሰኝ ቀርቧል (#${id})</p>
-          <p class="text-[10px] text-slate-400 mb-2">${items}</p>
-          <button onclick="inspectScreenshot('${id}', '${tNo}', '${total}', '${ord.Payment_Url}')" class="w-full py-1.5 bg-emerald-950 border border-emerald-500 text-emerald-300 rounded-lg text-xs font-bold mb-1.5">🖼️ ደረሰኝ እይ (Inspect)</button>
-          <button onclick="confirmCBEPayment('${id}')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black">ክፍያ አረጋግጥና ዝጋ ✓</button>
+          <div class="flex justify-between items-center text-[10px] text-slate-500 mb-1.5">
+            <span>🕒 ${timeStr}</span>
+            <span class="text-amber-600 dark:text-amber-400 font-mono">#${id}</span>
+          </div>
+          <p class="text-[11px] text-slate-800 dark:text-slate-200 font-semibold mb-1">📱 CBE ደረሰኝ ቀርቧል</p>
+          <p class="text-[10px] text-slate-600 dark:text-slate-400 mb-2 leading-tight">${items}</p>
+          <button onclick="inspectScreenshot('${id}', '${tNo}', '${total}', '${ord.Payment_Url}')" class="w-full py-1.5 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-400 dark:border-emerald-600 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-bold mb-1.5 flex items-center justify-center gap-1">
+            <i class="fa-solid fa-image"></i> <span>ደረሰኝ እይ (Inspect)</span>
+          </button>
+          <button onclick="confirmCBEPayment('${id}')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black shadow">
+            ክፍያ አረጋግጥና ዝጋ ✓
+          </button>
         </div>`;
     }
     // 2. KITCHEN (በዝግጅት ላይ)
     else if (st === 'kitchen' || st === 'preparing') {
       cK++;
-      const timerBadge = getPreparationTimeBadge(ord.Timestamp);
       colKitchen.innerHTML += `
         <div class="order-card kitchen-active">
-          <div class="flex justify-between items-center font-black text-sm mb-1">
-            <span>ጠረጴዛ #${tNo}</span>
+          <div class="flex justify-between items-center font-black text-xs mb-1">
+            <span class="text-slate-900 dark:text-white font-extrabold text-sm">ጠረጴዛ #${tNo}</span>
             <div class="flex items-center gap-1.5">
               ${timerBadge}
-              <span class="text-amber-400 font-mono text-xs">#${id}</span>
+              <span class="text-amber-600 dark:text-amber-400 font-mono text-xs font-bold">#${id}</span>
             </div>
           </div>
-          <p class="text-xs text-slate-200 mb-1 leading-relaxed font-semibold">${items}</p>
-          ${note ? `<div class="bg-slate-950 text-amber-300 text-[10px] p-1.5 rounded-lg mb-1.5 border border-amber-500/20">📝 ${note}</div>` : ''}
-          <div class="flex justify-between text-xs font-bold mb-2"><span>ድምር:</span><span class="text-emerald-400 font-mono">${total}</span></div>
-          <button onclick="moveToEating('${id}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-black shadow transition">
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono mb-1">🕒 የታዘዘበት ሰዓት: ${timeStr}</div>
+          <p class="text-xs text-slate-800 dark:text-slate-200 mb-1 leading-relaxed font-bold">${items}</p>
+          ${note ? `<div class="bg-amber-50 dark:bg-slate-950 text-amber-800 dark:text-amber-300 text-[10px] p-1.5 rounded mb-1.5 border border-amber-300 dark:border-amber-500/20 font-semibold">📝 ${note}</div>` : ''}
+          <div class="flex justify-between text-xs font-bold mb-2"><span>ድምር:</span><span class="text-emerald-600 dark:text-emerald-400 font-mono font-black">${total}</span></div>
+          <button onclick="moveToEating('${id}')" class="w-full py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg text-xs font-black shadow transition">
             ደርሷል ➔ በመመገብ ላይ (Send to Eat)
           </button>
         </div>`;
@@ -643,13 +826,17 @@ function renderKanban() {
       cE++;
       colDineIn.innerHTML += `
         <div class="order-card dine-active">
-          <div class="flex justify-between font-black text-sm mb-1">
-            <span>ጠረጴዛ #${tNo}</span>
-            <span class="text-emerald-400 font-bold">${total}</span>
+          <div class="flex justify-between items-center font-black text-xs mb-1">
+            <span class="text-slate-900 dark:text-white font-extrabold text-sm">ጠረጴዛ #${tNo}</span>
+            <span class="text-emerald-600 dark:text-emerald-400 font-mono font-black text-sm">${total}</span>
           </div>
-          <p class="text-xs text-slate-300 mb-2 leading-relaxed font-semibold">${items}</p>
-          <div class="bg-indigo-950 text-indigo-200 p-1.5 rounded-lg text-center text-[10px] font-bold mb-2 border border-indigo-500/30">🍽️ ደንበኛው በመመገብ ላይ ነው</div>
-          <button onclick="confirmCashPayment('${id}', '${tNo}')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow active:scale-95 transition">
+          <div class="flex justify-between items-center text-[10px] text-slate-500 mb-1">
+            <span>🕒 ${timeStr}</span>
+            <span class="font-mono text-slate-400">#${id}</span>
+          </div>
+          <p class="text-xs text-slate-800 dark:text-slate-200 mb-2 leading-relaxed font-bold">${items}</p>
+          <div class="bg-indigo-50 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200 p-1.5 rounded text-center text-[10px] font-bold mb-2 border border-indigo-200 dark:border-indigo-500/30">🍽️ ደንበኛው በመመገብ ላይ ነው</div>
+          <button onclick="confirmCashPayment('${id}', '${tNo}')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black shadow active:scale-95 transition">
             💵 በካሽ ተከፍሏል (Cash Paid)
           </button>
         </div>`;
@@ -659,16 +846,20 @@ function renderKanban() {
       cN++;
       colNew.innerHTML += `
         <div class="order-card new-pulse">
-          <div class="flex justify-between font-black text-sm mb-1">
-            <span>ጠረጴዛ #${tNo}</span>
-            <span class="text-amber-400 font-mono text-xs">#${id}</span>
+          <div class="flex justify-between items-center font-black text-xs mb-1">
+            <span class="text-slate-900 dark:text-white font-extrabold text-sm">ጠረጴዛ #${tNo}</span>
+            <span class="text-amber-600 dark:text-amber-400 font-mono font-bold">#${id}</span>
           </div>
-          <p class="text-xs text-slate-200 mb-1 leading-relaxed font-semibold">${items}</p>
-          ${note ? `<div class="bg-slate-950 text-amber-300 text-[10px] p-1.5 rounded-lg mb-1.5 border border-amber-500/20">📝 ${note}</div>` : ''}
-          <div class="flex justify-between text-xs font-bold mb-2"><span>ድምር:</span><span class="text-emerald-400 font-mono">${total}</span></div>
+          <div class="flex justify-between items-center text-[10px] text-slate-500 mb-1">
+            <span>🕒 ${timeStr}</span>
+            ${timerBadge}
+          </div>
+          <p class="text-xs text-slate-800 dark:text-slate-200 mb-1 leading-relaxed font-bold">${items}</p>
+          ${note ? `<div class="bg-amber-50 dark:bg-slate-950 text-amber-800 dark:text-amber-300 text-[10px] p-1.5 rounded mb-1.5 border border-amber-300 dark:border-amber-500/20 font-semibold">📝 ${note}</div>` : ''}
+          <div class="flex justify-between text-xs font-bold mb-2"><span>ድምር:</span><span class="text-emerald-600 dark:text-emerald-400 font-mono font-black">${total}</span></div>
           <div class="flex gap-1.5">
-            <button onclick="cancelOrder('${id}')" class="px-2.5 py-2 bg-slate-800 hover:bg-rose-900 text-rose-300 rounded-xl text-xs font-bold">✕</button>
-            <button onclick="moveToKitchen('${id}')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black">
+            <button onclick="cancelOrder('${id}')" class="px-2.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-950 text-rose-600 dark:text-rose-300 rounded-lg text-xs font-bold" title="ሰርዝ">✕</button>
+            <button onclick="moveToKitchen('${id}')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black shadow">
               ወደ ኪችን ላክ (Accept)
             </button>
           </div>
@@ -701,7 +892,6 @@ function setMobileKanbanCol(col, btn) {
   if (col === 'all') {
     cNew.style.display = ''; cKit.style.display = ''; cEat.style.display = ''; cVer.style.display = '';
   } else if (col === 'cook') {
-    // 🔥 COMBINED PHONE VIEW: NEW ORDERS + KITCHEN SIDE BY SIDE ON PHONE!
     cNew.style.display = 'flex';
     cKit.style.display = 'flex';
     cEat.style.display = 'none';
@@ -755,16 +945,16 @@ function renderTableMatrix() {
     const hasVerify = localOrders.some(o => (String(o.Table_No) == String(i) || String(o.Table_No) == tNo) && String(o.Payment_Status).toLowerCase() === 'verification_pending');
     const hasCall = localCalls.some(c => (String(c.Table_No) == String(i) || String(c.Table_No) == tNo) && String(c.Status).toLowerCase() === 'active');
 
-    let cls = 'bg-slate-900 border-slate-700 text-slate-400';
+    let cls = 'bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300';
     let statusTxt = 'Free';
 
     if (hasCall) { cls = 'bg-rose-950 border-rose-500 text-rose-300 animate-bounce font-black'; statusTxt = 'Call'; occupiedCount++; }
-    else if (hasVerify) { cls = 'bg-emerald-950 border-emerald-500 text-emerald-300 animate-pulse font-black'; statusTxt = 'Pay'; occupiedCount++; }
-    else if (isEating) { cls = 'bg-indigo-950 border-indigo-500 text-indigo-300 font-bold'; statusTxt = 'Eat'; occupiedCount++; }
-    else if (isPrep) { cls = 'bg-amber-950 border-amber-500 text-amber-300 font-bold'; statusTxt = 'Prep'; occupiedCount++; }
+    else if (hasVerify) { cls = 'bg-emerald-100 dark:bg-emerald-950 border-emerald-500 text-emerald-800 dark:text-emerald-300 animate-pulse font-black'; statusTxt = 'Pay'; occupiedCount++; }
+    else if (isEating) { cls = 'bg-indigo-100 dark:bg-indigo-950 border-indigo-500 text-indigo-800 dark:text-indigo-300 font-bold'; statusTxt = 'Eat'; occupiedCount++; }
+    else if (isPrep) { cls = 'bg-amber-100 dark:bg-amber-950 border-amber-500 text-amber-800 dark:text-amber-300 font-bold'; statusTxt = 'Prep'; occupiedCount++; }
 
     if (selectedFilterTable === i) {
-      cls += ' ring-2 ring-emerald-400 scale-105';
+      cls += ' ring-2 ring-emerald-500 scale-105 font-black';
     }
 
     grid.innerHTML += `
@@ -796,9 +986,21 @@ function clearTableFilter() {
   renderKanban();
 }
 
+// ─── INSPECT SCREENSHOT (WITH DIRECT DRIVE CDN LINK) ───
 function inspectScreenshot(id, tNo, total, rawUrl) {
   document.getElementById('inspTitle').innerText = `ጠረጴዛ #${tNo} - ደረሰኝ (${total})`;
-  document.getElementById('inspImg').src = rawUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80';
+  const imgUrl = formatDriveUrl(rawUrl);
+  const imgEl = document.getElementById('inspImg');
+  imgEl.src = imgUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&q=80';
+  
+  const openLinkBtn = document.getElementById('btnOpenDriveLink');
+  if (rawUrl && rawUrl.startsWith('http')) {
+    openLinkBtn.href = rawUrl;
+    openLinkBtn.classList.remove('hidden');
+  } else {
+    openLinkBtn.classList.add('hidden');
+  }
+
   document.getElementById('btnApprove').onclick = () => confirmCBEPayment(id);
   document.getElementById('inspectorModal').classList.remove('hidden');
 }
@@ -835,15 +1037,15 @@ function renderManualMenuItems() {
     const price = m.Price || 0;
     const qty = manualCart[id] || 0;
     return `
-      <div class="flex justify-between items-center p-2 bg-slate-800 rounded-xl text-xs">
+      <div class="flex justify-between items-center p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs">
         <div>
-          <span class="font-bold text-white block">${name}</span>
-          <span class="text-emerald-400 font-mono">${price} ETB</span>
+          <span class="font-bold text-slate-800 dark:text-white block">${name}</span>
+          <span class="text-emerald-600 dark:text-emerald-400 font-mono">${price} ETB</span>
         </div>
         <div class="flex items-center gap-2">
           ${qty > 0 ? `
-            <button onclick="changeManualQty('${id}', -1)" class="w-6 h-6 bg-slate-700 rounded font-bold">-</button>
-            <span class="font-bold text-white">${qty}</span>
+            <button onclick="changeManualQty('${id}', -1)" class="w-6 h-6 bg-slate-200 dark:bg-slate-700 rounded font-bold">-</button>
+            <span class="font-bold text-slate-800 dark:text-white">${qty}</span>
           ` : ''}
           <button onclick="changeManualQty('${id}', 1)" class="w-6 h-6 bg-[#C0392B] text-white rounded font-bold">+</button>
         </div>
@@ -942,12 +1144,12 @@ function renderStockItemList() {
     const name = m.Name_AM || m.Name_EN;
     const isAvail = String(m.Status || 'Available').toLowerCase() === 'available';
     return `
-      <div class="flex justify-between items-center p-3 bg-slate-800 rounded-xl border border-slate-700/60 text-xs">
+      <div class="flex justify-between items-center p-2.5 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
         <div>
-          <span class="font-bold text-white block text-sm">${name}</span>
-          <span class="text-gray-400 font-mono">${m.Price} ETB · ${m.Category_AM || ''}</span>
+          <span class="font-bold text-slate-800 dark:text-white block text-sm">${name}</span>
+          <span class="text-slate-500 dark:text-gray-400 font-mono">${m.Price} ETB · ${m.Category_AM || ''}</span>
         </div>
-        <button onclick="toggleStockItem('${id}', '${isAvail ? 'Out of Stock' : 'Available'}')" class="px-3 py-1.5 rounded-xl font-black text-xs ${isAvail ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}">
+        <button onclick="toggleStockItem('${id}', '${isAvail ? 'Out of Stock' : 'Available'}')" class="px-3 py-1.5 rounded-lg font-black text-xs ${isAvail ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}">
           ${isAvail ? '✓ አለ (Available)' : '✕ አልቋል (Out of Stock)'}
         </button>
       </div>
@@ -977,15 +1179,20 @@ function openShiftSummary() {
   fetch(`${SCRIPT_URL}?action=getShiftSummary&t=${Date.now()}`)
     .then(r => r.json())
     .then(d => {
+      const grand = d.grandTotal || 0;
+      const count = d.completedOrdersCount || 0;
+      const avg = count > 0 ? Math.round(grand / count) : 0;
+      
       Swal.fire({
-        title: '📊 የዕለቱ ሂሳብ መዝገብ (Shift Register)',
+        title: '📊 የዕለቱ ሂሳብ መዝገብ',
         html: `
-          <div class="text-left space-y-2.5 text-xs p-3 bg-slate-900 rounded-2xl border border-slate-700 text-slate-200">
-            <div class="flex justify-between"><span>💵 <b>ጥሬ ገንዘብ (Cash):</b></span><span class="text-emerald-400 font-bold">${d.cashTotal || 0} ETB</span></div>
-            <div class="flex justify-between"><span>📱 <b>CBE ባንክ፦</b></span><span class="text-blue-400 font-bold">${d.cbeTotal || 0} ETB</span></div>
-            <hr class="border-slate-700">
-            <div class="flex justify-between text-sm font-black"><span>💰 <b>ጠቅላላ ሽያጭ፦</b></span><span class="text-emerald-300">${d.grandTotal || 0} ETB</span></div>
-            <div class="flex justify-between text-[11px] text-gray-400"><span>የተጠናቀቁ ትዕዛዞች፦</span><span>${d.completedOrdersCount || 0}</span></div>
+          <div class="text-left space-y-2.5 text-xs p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200">
+            <div class="flex justify-between"><span>💵 <b>ጥሬ ገንዘብ (Cash):</b></span><span class="text-emerald-600 dark:text-emerald-400 font-bold font-mono text-sm">${(d.cashTotal || 0).toLocaleString()} ETB</span></div>
+            <div class="flex justify-between"><span>📱 <b>CBE ባንክ፦</b></span><span class="text-blue-600 dark:text-blue-400 font-bold font-mono text-sm">${(d.cbeTotal || 0).toLocaleString()} ETB</span></div>
+            <hr class="border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between text-sm font-black"><span>💰 <b>ጠቅላላ ገቢ፦</b></span><span class="text-[#C0392B] font-mono text-base">${grand.toLocaleString()} ETB</span></div>
+            <div class="flex justify-between text-[11px] text-slate-500 dark:text-gray-400"><span>የተጠናቀቁ ትዕዛዞች፦</span><span class="font-bold">${count}</span></div>
+            <div class="flex justify-between text-[11px] text-slate-500 dark:text-gray-400"><span>አማካይ የአንድ ትዕዛዝ ዋጋ፦</span><span class="font-mono font-bold">${avg} ETB</span></div>
           </div>
         `,
         confirmButtonColor: '#C0392B',
@@ -993,6 +1200,71 @@ function openShiftSummary() {
       });
     })
     .catch(() => showToast('የሂሳብ መረጃ ማምጣት አልተቻለም', 'error'));
+}
+
+// ─── ALL ORDERS HISTORY MODAL (የቀኑ ሙሉ ትዕዛዞች ታሪክ) ───
+function openOrderHistoryModal() {
+  renderOrderHistoryList();
+  document.getElementById('orderHistoryModal').classList.remove('hidden');
+}
+
+function closeOrderHistoryModal() {
+  document.getElementById('orderHistoryModal').classList.add('hidden');
+}
+
+function renderOrderHistoryList() {
+  const q = (document.getElementById('historySearchInput').value || '').toLowerCase().trim();
+  const filter = document.getElementById('historyStatusFilter').value;
+  const container = document.getElementById('historyItemsContainer');
+
+  let list = rawAllOrdersHistory || [];
+
+  if (filter !== 'all') {
+    list = list.filter(o => String(o.Order_Status).toLowerCase() === filter.toLowerCase() || String(o.Payment_Status).toLowerCase() === filter.toLowerCase());
+  }
+
+  if (q) {
+    list = list.filter(o => 
+      String(o.Order_ID || '').toLowerCase().includes(q) ||
+      String(o.Table_No || '').toLowerCase().includes(q) ||
+      String(o.Items_Ordered || '').toLowerCase().includes(q)
+    );
+  }
+
+  document.getElementById('historyCountText').innerText = `${list.length} ትዕዛዞች ተገኝተዋል`;
+
+  if (!list.length) {
+    container.innerHTML = `<p class="text-slate-400 text-center py-8 font-bold text-xs">ምንም ትዕዛዝ አልተገኘም</p>`;
+    return;
+  }
+
+  container.innerHTML = list.map(ord => {
+    const st = ord.Order_Status || 'New';
+    const paySt = ord.Payment_Status || 'Unpaid';
+    const isPaid = st === 'Paid' || paySt === 'Paid';
+    const isCancelled = st === 'Cancelled';
+
+    let badgeCls = 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300';
+    if (isPaid) badgeCls = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
+    else if (isCancelled) badgeCls = 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300';
+
+    return `
+      <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs space-y-1.5 shadow-sm">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <span class="font-black text-sm text-slate-800 dark:text-white">ጠረጴዛ #${ord.Table_No}</span>
+            <span class="font-mono text-slate-500 font-bold">#${ord.Order_ID}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded font-black text-[10px] ${badgeCls}">${st} / ${paySt}</span>
+        </div>
+        <p class="text-slate-700 dark:text-slate-300 leading-snug">${ord.Items_Ordered}</p>
+        <div class="flex justify-between items-center pt-1 border-t border-slate-200 dark:border-slate-700 text-[11px]">
+          <span class="text-slate-500 font-mono">🕒 ${ord.Timestamp}</span>
+          <span class="font-black text-emerald-600 dark:text-emerald-400 font-mono text-sm">${ord.Total_Price}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 function scrollToSection(id) {
@@ -1003,10 +1275,10 @@ function scrollToSection(id) {
 function openSidebar() { document.getElementById('sidebar').classList.add('open'); }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
-// START FAST LIVE POLLING & TIMER UPDATES
+// START FAST LIVE POLLING & SECOND-BY-SECOND LIVE TIME TICKERS
 fetchStaffData();
 setInterval(fetchStaffData, 2500);
-setInterval(renderKanban, 15000); // Re-render minute timers live
+setInterval(renderKanban, 1000); // Live seconds & minutes ticker
 </script>
 </body>
 </html>
